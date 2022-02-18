@@ -9,16 +9,14 @@ let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
 //myCar.go()
 //myCar.turnOn()
 //myCar.go()
-
-myCar.honkHorn(HonkLevel.minor)
-myCar.honkHorn(HonkLevel.major)
-myCar.honkHorn(HonkLevel.critical)
 myCar.honkHorn()
+myCar.openDoor(Door.Passenger)
+myCar.openDoor(Door.Driver)
 //myCar.honkHorn()
 
 //myCar.turnOff()
 
-// TODO:
+// TODO: on shutdown
 // record weight on all seats
 // driver opens door, leaves seat, closes door
 // start timer
@@ -26,7 +24,7 @@ myCar.honkHorn()
 // add test cases
 
 // TODO class/function implementations
-// car: honk horn (allow for different alerts)
+// DONE car: honk horn (allow for different alerts)
 // car: door open/close
 // car: add seats
 // car: trunk?
@@ -42,7 +40,18 @@ class RememberCar: BasicCar, CarRemember {
     public func doRememberAlert(){
         print("Did you remember xyz?")
     }
+
+    public override func openDoor(_ door: Door){
+        // we only care about driver leaving
+        switch door{
+        case .Driver:
+            print("Driver opened door")
+        default:
+            print("Don't care about this door")
+        }
+    }
 }
+
 class BasicCar: CarStandard {
     let carStereo: CarStereo
     let engine: Engine
@@ -80,12 +89,23 @@ class BasicCar: CarStandard {
         }
     }
 
+    public func openDoor(_ door: Door){
+        // blank for now
+    }
+    public func closeDoor(_ door:Door){
+
+    }
+
 }
 
 public enum HonkLevel {
-    case minor
+    case minor    // TODO fix case
     case major
     case critical
+}
+
+public enum Door {
+    case Driver, Passenger, RearDriverSide, ReaderPassengerSide, Trunk
 }
 /*
 Standard car requirements/features
@@ -94,6 +114,8 @@ public protocol CarStandard {
     func turnOn()
     func turnOff()
     func honkHorn(_ level: HonkLevel?)
+    func openDoor(_ door: Door)
+    func closeDoor(_ door:Door)
 }
 
 /*
