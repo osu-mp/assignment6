@@ -2,12 +2,19 @@ import Foundation
 
 let gasEngine = GasEngine()
 let basicStereo = BasicStereo()
-let myCar = Car(carStrereo: basicStereo, engine: gasEngine)
+let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
 myCar.go()
-myCar.turnKey()
+myCar.turnOn()
 myCar.go()
+myCar.turnOff()
 
-class Car {
+class RememberCar: BasicCar {
+    public override func turnOff(){
+        super.turnOff();
+        print("Did you remember xyz?")
+    }
+}
+class BasicCar: CarStandard {
     let carStereo: CarStereo
     let engine: Engine
 
@@ -16,18 +23,28 @@ class Car {
         self.engine = engine
     }
 
-    public func turnKey(){
+    public func turnOn(){
         self.engine.start()
+    }
+
+    public func turnOff(){
+        self.engine.stop()
+        self.carStereo.shutDown()
+        // initNeverForgetFlow();
+
     }
 
     public func go(){
         self.engine.accelerate()
     }
+}
 
-    public func turnOff(){
-        initNeverForgetFlow();
-        self.carStereo.tu
-    }
+/*
+Standard car requirements/features
+*/
+public protocol CarStandard {
+    func turnOn()
+    func turnOff()
 }
 
 public protocol Engine {
@@ -41,7 +58,7 @@ public protocol CarStereo {
     func pause()
     func volume(level: Double)
     func next()
-    public func shutDown()
+    func shutDown()
 }
 
 public class GasEngine: Engine{
@@ -63,7 +80,7 @@ public class GasEngine: Engine{
 
     public func stop(){
         self.running = false
-        print("Stopped")
+        print("Engine stopped")
     }
 }
 
