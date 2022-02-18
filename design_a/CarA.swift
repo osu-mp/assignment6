@@ -6,16 +6,24 @@ let basicStereo = BasicStereo()
 let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
 
 // do a basic run/test
-myCar.go()
-myCar.turnOn()
-myCar.go()
-myCar.turnOff()
+//myCar.go()
+//myCar.turnOn()
+//myCar.go()
+
+myCar.honkHorn(HonkLevel.minor)
+myCar.honkHorn(HonkLevel.major)
+myCar.honkHorn(HonkLevel.critical)
+myCar.honkHorn()
+//myCar.honkHorn()
+
+//myCar.turnOff()
 
 // TODO:
 // record weight on all seats
 // driver opens door, leaves seat, closes door
 // start timer
 // when timer ends, if weight remains on then alert
+// add test cases
 
 // TODO class/function implementations
 // car: honk horn (allow for different alerts)
@@ -58,20 +66,40 @@ class BasicCar: CarStandard {
     public func go(){
         self.engine.accelerate()
     }
+
+    public func honkHorn(_ level: HonkLevel? = nil) {
+        switch level {
+        case .minor:
+            print("beep")
+        case .major:
+            print("beeeeep")
+        case .critical:
+            print("BEEP BEEP BEEP")
+        default:
+            print("beep")
+        }
+    }
+
 }
 
+public enum HonkLevel {
+    case minor
+    case major
+    case critical
+}
 /*
 Standard car requirements/features
 */
 public protocol CarStandard {
     func turnOn()
     func turnOff()
+    func honkHorn(_ level: HonkLevel?)
 }
 
 /*
 Optional safety feature: remember reminder
 */
-public protocol CarRemember{
+public protocol CarRemember: CarStandard{
     func doRememberAlert()
 }
 
