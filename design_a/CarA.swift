@@ -1,16 +1,37 @@
 import Foundation
 
+// create the car instance
 let gasEngine = GasEngine()
 let basicStereo = BasicStereo()
 let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
+
+// do a basic run/test
 myCar.go()
 myCar.turnOn()
 myCar.go()
 myCar.turnOff()
 
-class RememberCar: BasicCar {
+// TODO:
+// record weight on all seats
+// driver opens door, leaves seat, closes door
+// start timer
+// when timer ends, if weight remains on then alert
+
+// TODO class/function implementations
+// car: honk horn (allow for different alerts)
+// car: door open/close
+// car: add seats
+// car: trunk?
+// seat class: weight on seat, isDriver
+
+
+class RememberCar: BasicCar, CarRemember {
     public override func turnOff(){
         super.turnOff();
+        doRememberAlert()
+    }
+
+    public func doRememberAlert(){
         print("Did you remember xyz?")
     }
 }
@@ -45,6 +66,13 @@ Standard car requirements/features
 public protocol CarStandard {
     func turnOn()
     func turnOff()
+}
+
+/*
+Optional safety feature: remember reminder
+*/
+public protocol CarRemember{
+    func doRememberAlert()
 }
 
 public protocol Engine {
