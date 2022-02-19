@@ -41,7 +41,7 @@ class RememberCar: BasicCar, CarRemember {
         print("Did you remember xyz?")
     }
 
-    public override func openDoor(_ door: Door){
+    public override func closeDoor(_ door: Door){
         // we only care about driver leaving
         switch door{
         case .Driver:
@@ -78,8 +78,8 @@ class BasicCar: CarStandard {
 
     public func honkHorn(_ level: HonkLevel? = nil) {
         switch level {
-        case .minor:
-            print("beep")
+        case .minor:                  // default behvior if no input given
+            fallthrough
         case .major:
             print("beeeeep")
         case .critical:
