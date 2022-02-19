@@ -11,15 +11,18 @@ let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
 //myCar.go()
 myCar.honkHorn()
 myCar.openDoor(Door.Passenger)
-myCar.openDoor(Door.Driver)
+myCar.closeDoor(Door.Driver)
 //myCar.honkHorn()
 
 //myCar.turnOff()
 
+// TODO (nice to have) record weights when car starts
+// if changes while moving-> alarm
+
 // TODO: on shutdown
 // record weight on all seats
-// driver opens door, leaves seat, closes door
-// start timer
+// driver leaves seat, closes door
+// start timer (10 seconds?)
 // when timer ends, if weight remains on then alert
 // add test cases
 
@@ -139,6 +142,14 @@ public protocol CarStereo {
     func shutDown()
 }
 
+public protocol CarSeat {
+    func getIsBuckled() -> Bool
+    func getWeight() -> Float
+}
+
+public class CarSeatImpl: CarSeat {
+
+}
 public class GasEngine: Engine{
     var running = false
 
