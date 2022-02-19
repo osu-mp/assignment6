@@ -28,7 +28,7 @@ myCar.closeDoor(Door.Driver)
 
 // TODO class/function implementations
 // DONE car: honk horn (allow for different alerts)
-// car: door open/close
+// DONE door open/close
 // car: add seats
 // car: trunk?
 // seat class: weight on seat, isDriver
@@ -48,7 +48,7 @@ class RememberCar: BasicCar, CarRemember {
         // we only care about driver leaving
         switch door{
         case .Driver:
-            print("Driver opened door")
+            print("Driver closed door")
         default:
             print("Don't care about this door")
         }
@@ -144,10 +144,27 @@ public protocol CarStereo {
 
 public protocol CarSeat {
     func getIsBuckled() -> Bool
-    func getWeight() -> Float
+    func getWeight() -> Double
+    func setWeight(weight: Double)
 }
 
 public class CarSeatImpl: CarSeat {
+    private var isBuckled = false
+    private var weight = 0.0
+
+    public init(){}
+
+    public func getIsBuckled() -> Bool{
+        return self.isBuckled
+    }
+
+    public func getWeight() -> Double {
+        return self.weight
+    }
+
+    public func setWeight(weight: Double){
+        self.weight = weight
+    }
 
 }
 public class GasEngine: Engine{
