@@ -30,9 +30,12 @@ myCar.closeDoor(Door.Driver)
 // DONE car: honk horn (allow for different alerts)
 // DONE door open/close
 // car: add seats
-// car: trunk?
 // seat class: weight on seat, isDriver
 
+// Teja TODO: create seat instances in BasicCar class
+// TODO : on car shutdown get all weights
+// TODO : on driver exit, compare current weights against saved weight
+// TODO : if any differences, alert driver (honk)
 
 class RememberCar: BasicCar, CarRemember {
     public override func turnOff(){
