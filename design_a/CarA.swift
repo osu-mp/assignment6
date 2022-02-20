@@ -18,7 +18,7 @@ driverSeat.setWeight(weight: 150)
 passengerSeat.setWeight(weight: 130)
 //myCar.honkHorn()
 myCar.turnOff()
-
+myCar.closeDoor(Door.Driver)
 /* CASE 1: passenger remains
    EXPECT: alert
 driver gets in
@@ -57,27 +57,30 @@ no alert
 // TODO : if any differences, alert driver (honk)
 
 class RememberCar: BasicCar, CarRemember {
-    var driverInSeat
+    var driverInSeat = false
+
+    //public override init(carStrereo: CarStereo, engine: Engine, driverSeat: CarSeat, passengerSeat: CarSeat){
+    //  super.init(carStrereo: CarStereo, engine: Engine, driverSeat: CarSeat, passengerSeat: CarSeat)
+    //}
 
     public override func turnOff(){
         super.turnOff();
-        doRememberAlert()
+        initRememberAlert()
     }
 
-    public func doRememberAlert(){
+    public func initRememberAlert(){
         // get all weights on seats (passngers only)
         let passengerWeight = self.passengerSeat.getWeight()
         if(passengerWeight > 0){
             print("INFO: Passenger weight of \(passengerWeight) marked")
         }
+    }
 
-        // kick this part off in a separate thread
-        // wait for driver to leave
-        //while(self.driverInSeat){
-
-        //}
+    public func checkRememberAlert(){
         // start timer
+        print("TODO timer")
         // if weights on any other seats after timer, do alert
+        print("TODO check weights on seats")
     }
 
     public override func closeDoor(_ door: Door){
@@ -91,6 +94,7 @@ class RememberCar: BasicCar, CarRemember {
             }
             else{
                 self.driverInSeat = false
+                checkRememberAlert()
             }
         default:
             print("Don't care about this door")
@@ -166,7 +170,8 @@ public protocol CarStandard {
 Optional safety feature: remember reminder
 */
 public protocol CarRemember: CarStandard{
-    func doRememberAlert()
+    func initRememberAlert()
+    func checkRememberAlert()
 }
 
 public protocol Engine {
