@@ -3,7 +3,9 @@ import Foundation
 // create the car instance
 let gasEngine = GasEngine()
 let basicStereo = BasicStereo()
-let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
+let driverSeat = CarSeatImpl()
+let passengerSeat = CarSeatImpl()
+let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine, driverSeat: driverSeat, passengerSeat: passengerSeat)
 
 // do a basic run/test
 //myCar.go()                    // car must be turned on first
@@ -12,8 +14,31 @@ let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
 myCar.honkHorn()                // default to minor beep if no input given
 myCar.openDoor(Door.Passenger)
 myCar.closeDoor(Door.Driver)
+driverSeat.setWeight(weight: 150)
+passengerSeat.setWeight(weight: 130)
 //myCar.honkHorn()
-//myCar.turnOff()
+myCar.turnOff()
+
+/* CASE 1: passenger remains
+   EXPECT: alert
+driver gets in
+passgenger gets in
+driver turns off car
+driver exits (closes door)
+(passenger remains)
+after timer expires, alert that weight still on passgenger seat
+*/
+
+/* CASE 2: passenger exits with driver
+   EXPECT: no alert
+driver gets in
+passgenger gets in
+driver turns off car
+passenger exits
+driver exits (closes door)
+timer expires, check weight on seats (both empty)
+no alert
+*/
 
 
 // TODO: on shutdown
@@ -27,19 +52,32 @@ myCar.closeDoor(Door.Driver)
 // car: add seats
 // seat class: weight on seat, isDriver
 
-// Teja TODO: create seat instances in BasicCar class
 // TODO : on car shutdown get all weights
 // TODO : on driver exit, compare current weights against saved weight
 // TODO : if any differences, alert driver (honk)
 
 class RememberCar: BasicCar, CarRemember {
+    var driverInSeat
+
     public override func turnOff(){
         super.turnOff();
         doRememberAlert()
     }
 
     public func doRememberAlert(){
-        print("Did you remember xyz?")
+        // get all weights on seats (passngers only)
+        let passengerWeight = self.passengerSeat.getWeight()
+        if(passengerWeight > 0){
+            print("INFO: Passenger weight of \(passengerWeight) marked")
+        }
+
+        // kick this part off in a separate thread
+        // wait for driver to leave
+        //while(self.driverInSeat){
+
+        //}
+        // start timer
+        // if weights on any other seats after timer, do alert
     }
 
     public override func closeDoor(_ door: Door){
@@ -47,19 +85,33 @@ class RememberCar: BasicCar, CarRemember {
         switch door{
         case .Driver:
             print("Driver closed door")
+            let weight = self.driverSeat.getWeight()
+            if(weight > 0){
+                self.driverInSeat = true
+            }
+            else{
+                self.driverInSeat = false
+            }
         default:
             print("Don't care about this door")
         }
     }
+
+
 }
 
+// Basic car is a two door coupe (only 2 seats)
 class BasicCar: CarStandard {
     let carStereo: CarStereo
     let engine: Engine
+    let driverSeat: CarSeat
+    let passengerSeat: CarSeat
 
-    public init(carStrereo: CarStereo, engine: Engine){
+    public init(carStrereo: CarStereo, engine: Engine, driverSeat: CarSeat, passengerSeat: CarSeat){
         self.carStereo = carStrereo
         self.engine = engine
+        self.driverSeat = driverSeat
+        self.passengerSeat = passengerSeat
     }
 
     public func turnOn(){
@@ -69,8 +121,6 @@ class BasicCar: CarStandard {
     public func turnOff(){
         self.engine.stop()
         self.carStereo.shutDown()
-        // initNeverForgetFlow();
-
     }
 
     public func go(){
