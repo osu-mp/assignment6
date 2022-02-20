@@ -6,18 +6,15 @@ let basicStereo = BasicStereo()
 let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine)
 
 // do a basic run/test
-//myCar.go()
+//myCar.go()                    // car must be turned on first
 //myCar.turnOn()
 //myCar.go()
-myCar.honkHorn()
+myCar.honkHorn()                // default to minor beep if no input given
 myCar.openDoor(Door.Passenger)
 myCar.closeDoor(Door.Driver)
 //myCar.honkHorn()
-
 //myCar.turnOff()
 
-// TODO (nice to have) record weights when car starts
-// if changes while moving-> alarm
 
 // TODO: on shutdown
 // record weight on all seats
@@ -27,8 +24,6 @@ myCar.closeDoor(Door.Driver)
 // add test cases
 
 // TODO class/function implementations
-// DONE car: honk horn (allow for different alerts)
-// DONE door open/close
 // car: add seats
 // seat class: weight on seat, isDriver
 
@@ -84,30 +79,23 @@ class BasicCar: CarStandard {
 
     public func honkHorn(_ level: HonkLevel? = nil) {
         switch level {
-        case .minor:                  // default behvior if no input given
+        case .Minor:                  // default behvior if no input given
             fallthrough
-        case .major:
+        case .Major:
             print("beeeeep")
-        case .critical:
+        case .Critical:
             print("BEEP BEEP BEEP")
         default:
             print("beep")
         }
     }
 
-    public func openDoor(_ door: Door){
-        // blank for now
-    }
-    public func closeDoor(_ door:Door){
-
-    }
-
+    public func openDoor(_ door: Door){}
+    public func closeDoor(_ door:Door){}
 }
 
 public enum HonkLevel {
-    case minor    // TODO fix case
-    case major
-    case critical
+    case Minor, Major, Critical
 }
 
 public enum Door {
