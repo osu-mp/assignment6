@@ -1,7 +1,9 @@
+#!/usr/bin/env swift
 import Foundation
 
 /*
 
+ Please allow execute permission for this file before running it: ` chmod u+x main.swift `
 The car is implemented with the following safety features:
  - The user can turn on/off the following safety features of the car:
         - Lane assist
@@ -25,6 +27,8 @@ let car=Car( engine:engine, environment:environment )
 //car.start()
 
 var exit: Bool = true
+
+
 while(exit)
 {   let userInput = readLine()
 
@@ -40,6 +44,7 @@ while(exit)
            7/turnoff_lane_assist - Turn off lane assist
            8/turnon_automatic_breaking - Turn on automatic breaking
            9/turnon_lane_assist - Turn on lane assist
+          10/change_password - Change the current password to turn on the engine
            
            e/exit - exit the car
 
@@ -66,6 +71,8 @@ while(exit)
         car.turnOnAutomaticBreaking()
     case "turnon_lane_assist","9":
         car.turnOnlaneAssist()
+    case "change_password","10":
+        car.changePassword()
     case "exit","e":
         exit=false
         car.stop()
@@ -106,10 +113,20 @@ class Car: Drivable, VehicleChecks {
     private var seatWeight: Int = 0
     private var seatBeltsOn: Bool = false
     private var speedLimiter: Double = 0.0
+    private var pass: String = ""
+    private var pass_counter=0
+    private var engineDisabled = false
     init( engine: Engine, environment: Environment ){
 
         self.engine = engine
         self.environment = environment
+        let userInput=getpass("Enter your password")
+        self.pass = String(cString:userInput!)
+        print("Your password is \(self.pass)")
+
+
+
+
     }
 
     func unlock(){
@@ -122,15 +139,46 @@ class Car: Drivable, VehicleChecks {
         print("Doors are locked")
     }
 
-    func start(){
+    func checkPassword()->Bool{
 
+        let userInput=getpass("Enter Password to start the engine")
+
+
+        if String(cString:userInput!) == self.pass{
+            print("User Authenticated")
+            return true
+        }
+        else{
+
+            return false
+        }
+
+
+
+
+    }
+    func start(){
+        if engineDisabled{
+            print("Engine is disabled due to too many wrong password attempts. Please contact customer support")
+            return
+        }
         if self.isSeated() {
-            self.engine.start()
-            automaticBreakingOn = true
-            laneAssistOn = true
-            doorsLocked = true
-            self.setSpeedlimiter(speed: 180)
-            self.resetSpeedLimiter() // reduced speed limit based on prevailing environmental conditions
+            if self.checkPassword() {
+                self.engine.start()
+                automaticBreakingOn = true
+                laneAssistOn = true
+                doorsLocked = true
+                self.setSpeedlimiter(speed: 180)
+                self.resetSpeedLimiter() // reduced speed limit based on prevailing environmental conditions
+            }
+            else{
+                print("Wrong Password, try again")
+                self.pass_counter+=1
+                if self.pass_counter>=3{
+                    print("Vehicle Engine - Locked. Please contact CS561 to authenticate yourself and reset the password")
+                    engineDisabled = true
+                }
+            }
         }
         else{
             print("Need to be properly seated and buckled up")
@@ -138,6 +186,10 @@ class Car: Drivable, VehicleChecks {
     }
 
     func stop(){
+        if engineDisabled{
+            print("Engine is disabled due to too many wrong password attempts. Please contact customer support")
+            return
+        }
         self.engine.stop()
         automaticBreakingOn = false
         laneAssistOn = false
@@ -210,6 +262,10 @@ class Car: Drivable, VehicleChecks {
 
     }
     func turnOfflaneAssist() {
+        if engineDisabled{
+            print("Engine is disabled due to too many wrong password attempts. Please contact customer support")
+            return
+        }
 
         laneAssistOn = false
         if self.currentSpeedLimit()>80{
@@ -222,6 +278,10 @@ class Car: Drivable, VehicleChecks {
     }
 
     func turnOffAutomaticBreaking() {
+        if engineDisabled{
+            print("Engine is disabled due to too many wrong password attempts. Please contact customer support")
+            return
+        }
         automaticBreakingOn = false
         if self.currentSpeedLimit()>60{
             self.setSpeedlimiter(speed:60.0)
@@ -231,7 +291,10 @@ class Car: Drivable, VehicleChecks {
     }
 
     func turnOnlaneAssist() {
-
+        if engineDisabled{
+            print("Engine is disabled due to too many wrong password attempts. Please contact customer support")
+            return
+        }
         laneAssistOn = true
         if automaticBreakingOn == false{
             self.setSpeedlimiter(speed:60.0)
@@ -246,6 +309,10 @@ class Car: Drivable, VehicleChecks {
     }
 
     func turnOnAutomaticBreaking() {
+        if engineDisabled{
+            print("Engine is disabled due to too many wrong password attempts. Please contact customer support")
+            return
+        }
         automaticBreakingOn = true
         if laneAssistOn == false{
             self.setSpeedlimiter(speed:80.0)
@@ -268,6 +335,18 @@ class Car: Drivable, VehicleChecks {
 
     func currentSpeedLimit() -> Double {
         return speedLimiter
+    }
+
+    func changePassword(){
+        let curr_pass=getpass("Enter Current Password")
+        if String(cString:curr_pass!) == self.pass{
+            let userInput=getpass("Enter New password")
+            self.pass=String(cString:userInput!)
+            print("Your new password is \(self.pass)")
+        }
+        else{
+            print("Wrong password entered")
+        }
     }
 }
 
