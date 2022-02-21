@@ -7,101 +7,96 @@ let driverSeat = CarSeatImpl()
 let passengerSeat = CarSeatImpl()
 let myCar = RememberCar(carStrereo: basicStereo, engine: gasEngine, driverSeat: driverSeat, passengerSeat: passengerSeat)
 
-// do a basic run/test
-//myCar.go()                    // car must be turned on first
-//myCar.turnOn()
-//myCar.go()
-myCar.honkHorn()                // default to minor beep if no input given
-myCar.openDoor(Door.Passenger)
-myCar.closeDoor(Door.Driver)
-driverSeat.setWeight(weight: 150)
-passengerSeat.setWeight(weight: 130)
-//myCar.honkHorn()
-myCar.turnOff()
-myCar.closeDoor(Door.Driver)
 /* CASE 1: passenger remains
    EXPECT: alert
-driver gets in
-passgenger gets in
+driver and passenger get in, go somewhere
 driver turns off car
-driver exits (closes door)
+driver exits (gets off seat and closes door)
 (passenger remains)
-after timer expires, alert that weight still on passgenger seat
+alert that weight still on passgenger seat
 */
+print("CASE 1: Passenger remains (expect major honk)")
+myCar.openDoor(Door.Passenger)
+passengerSeat.setWeight(weight: 130)
+myCar.closeDoor(Door.Passenger)
+myCar.openDoor(Door.Driver)
+driverSeat.setWeight(weight: 150)
+myCar.closeDoor(Door.Driver)
+myCar.turnOn()
+myCar.go()
+myCar.turnOff()
+myCar.openDoor(Door.Driver)
+driverSeat.setWeight(weight: 0)
+myCar.closeDoor(Door.Driver)
 
 /* CASE 2: passenger exits with driver
    EXPECT: no alert
-driver gets in
-passgenger gets in
+driver and passenger get in, go somewhere
 driver turns off car
 passenger exits
-driver exits (closes door)
-timer expires, check weight on seats (both empty)
-no alert
+driver exits (gets off seat and closes door)
+check weight on seats (both empty): no alert
 */
+print("\nCASE 2: Passenger leaves with driver (no honk)")
+myCar.openDoor(Door.Passenger)
+passengerSeat.setWeight(weight: 130)
+myCar.closeDoor(Door.Passenger)
+myCar.openDoor(Door.Driver)
+driverSeat.setWeight(weight: 150)
+myCar.closeDoor(Door.Driver)
+myCar.turnOn()
+myCar.go()
+myCar.turnOff()
+myCar.openDoor(Door.Passenger)
+passengerSeat.setWeight(weight: 0.0)
+myCar.closeDoor(Door.Passenger)
+myCar.openDoor(Door.Driver)
+driverSeat.setWeight(weight: 0.0)
+myCar.closeDoor(Door.Driver)
 
-
-// TODO: on shutdown
-// record weight on all seats
-// driver leaves seat, closes door
-// start timer (10 seconds?)
-// when timer ends, if weight remains on then alert
-// add test cases
-
-// TODO class/function implementations
-// car: add seats
-// seat class: weight on seat, isDriver
-
-// TODO : on car shutdown get all weights
-// TODO : on driver exit, compare current weights against saved weight
-// TODO : if any differences, alert driver (honk)
-
+// RememberCar is also a coupe (2 seats), has extra safety feature: check for people/things left on shutdown:
+// Wait until driver leaves seat, closes door
+// if weight remains on any other seats then alert
 class RememberCar: BasicCar, CarRemember {
     var driverInSeat = false
 
-    //public override init(carStrereo: CarStereo, engine: Engine, driverSeat: CarSeat, passengerSeat: CarSeat){
-    //  super.init(carStrereo: CarStereo, engine: Engine, driverSeat: CarSeat, passengerSeat: CarSeat)
-    //}
-
     public override func turnOff(){
         super.turnOff();
-        initRememberAlert()
+        initRememberAlert()              // extra feature, check for left people/things
     }
 
     public func initRememberAlert(){
         // get all weights on seats (passngers only)
         let passengerWeight = self.passengerSeat.getWeight()
-        if(passengerWeight > 0){
+        if(passengerWeight > 0.0){
             print("INFO: Passenger weight of \(passengerWeight) marked")
+        }
+        else{
+            print("INFO: Passenger seat empty")
         }
     }
 
     public func checkRememberAlert(){
-        // start timer
-        print("TODO timer")
-        // if weights on any other seats after timer, do alert
-        print("TODO check weights on seats")
+        // Driver has left for car, alert if any weight remains on passenger seat
+        // Future TODO : add delay timer
+        if(self.passengerSeat.getWeight() > 0.0){
+            print("INFO: Someone/something left on passenger seat, honking")
+            self.honkHorn(HonkLevel.Major)
+        }
     }
 
     public override func closeDoor(_ door: Door){
         // we only care about driver leaving
         switch door{
         case .Driver:
-            print("Driver closed door")
             let weight = self.driverSeat.getWeight()
-            if(weight > 0){
-                self.driverInSeat = true
-            }
-            else{
-                self.driverInSeat = false
+            if(0.0 == weight){
                 checkRememberAlert()
             }
         default:
-            print("Don't care about this door")
+            break     // don't care about other seats right now
         }
     }
-
-
 }
 
 // Basic car is a two door coupe (only 2 seats)
@@ -227,7 +222,7 @@ public class GasEngine: Engine{
 
     public func start(){
         self.running = true
-        print("Started")
+        print("Engine started")
     }
 
     public func stop(){
